@@ -360,20 +360,23 @@ void* SRTFcpu(void* param) {
             pthread_mutex_unlock(&(svars->readyQLock));
 
         }
-        else if(p->burstRemaining > qShortestBR(&(svars->readyQ))) {
+        else {
             // Lock readyQ before inspecting or modifying it — another CPU
             // thread (or main inserting a new arrival) could touch it right now.
             pthread_mutex_lock(&(svars->readyQLock));
-            //Add the current running process back to the ready queue. 
-            p->requeued = true;
-            qInsert(&(svars->readyQ), p);
-            //Run the process with the shortest burst remaining
-            p = qRemove(&(svars->readyQ), qShortest(&(svars->readyQ)));
-            if (p == NULL) {
-                // readyQ was empty — CPU stays idle this tick.
-                printf("No process to schedule\n");
-            } else {
+            //Check if a process in the ready queue has shorter remaining time than the current process
+            if(p->burstRemaining > qShortestBR(&(svars->readyQ))) {
+                //Add the current running process back to the ready queue. 
+                p->requeued = true;
+                qInsert(&(svars->readyQ), p);
+                //Run the process with the shortest burst remaining
+                p = qRemove(&(svars->readyQ), qShortest(&(svars->readyQ)));
+                if (p == NULL) {
+                    // readyQ was empty — CPU stays idle this tick.
+                    printf("No process to schedule\n");
+                } else {
                     printf("Scheduling PID %d\n", p->PID);
+                }
             }
             pthread_mutex_unlock(&(svars->readyQLock));
 
@@ -442,21 +445,25 @@ void* PPcpu(void* param) {
             pthread_mutex_unlock(&(svars->readyQLock));
 
         }
-        else if(p->priority > qGetPriority(&(svars->readyQ))) {
+        else{
             // Lock readyQ before inspecting or modifying it — another CPU
             // thread (or main inserting a new arrival) could touch it right now.
             pthread_mutex_lock(&(svars->readyQLock));
-            //Add the current running process back to the ready queue. 
-            p->requeued = true;
-            qInsert(&(svars->readyQ), p);
-            //Run the process with the shortest burst remaining
-            p = qRemove(&(svars->readyQ), qPriority(&(svars->readyQ)));
-            if (p == NULL) {
-                // readyQ was empty — CPU stays idle this tick.
-                printf("No process to schedule\n");
-            } else {
-                    printf("Scheduling PID %d\n", p->PID);
+            //Check if a process in the ready queue has higher priority
+            if(p->priority > qGetPriority(&(svars->readyQ))){
+                //Add the current running process back to the ready queue. 
+                p->requeued = true;
+                qInsert(&(svars->readyQ), p);
+                //Run the process with the shortest burst remaining
+                p = qRemove(&(svars->readyQ), qPriority(&(svars->readyQ)));
+                if (p == NULL) {
+                    // readyQ was empty — CPU stays idle this tick.
+                    printf("No process to schedule\n");
+                } else {
+                        printf("Scheduling PID %d\n", p->PID);
+                }
             }
+
             pthread_mutex_unlock(&(svars->readyQLock));
 
         }
