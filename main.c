@@ -1,7 +1,7 @@
 /** main.c
  * ===========================================================
- * Name: <Last Name, First Name>
- * Section: <Section>
+ * Name: Metwally, Mohamed
+ * Section: M4
  * Project: PEX2 - CPU Scheduling Simulator
  * Purpose: Entry point for the multi-threaded CPU scheduling simulator.
  *          Reads simulation parameters from command-line arguments or
@@ -12,7 +12,7 @@
  *          Supports sequential (default) and parallel CPU signaling modes;
  *          see usage() for the full argument list and a description of each.
  * ===========================================================
- * Documentation Statement: <describe any help received>
+ * Documentation Statement: None
  * ===========================================================
  * ======================================================================
  * Required Features Not Included:1
